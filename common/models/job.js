@@ -1,5 +1,4 @@
-var winston = require('winston');
-var Papertrail = require('winston-papertrail').Papertrail;
+var logger = require('strong-logger');
 
 module.exports = function(Job) {
 
@@ -20,28 +19,13 @@ module.exports = function(Job) {
 
   // the actual function called by the route to do the work
   Job.message = function(id, message, sender, cb) {
-    Job.findById(id, function(err, record){
+    Job.findById(id, function(err, job){
       if (err) cb(err);
       if (!err) {
-
-        var logger = new winston.Logger({
-          transports: [
-            new winston.transports.Papertrail({
-              host: 'logs3.papertrailapp.com',
-              port: 53467,
-              program: 'jeffdonthemic',
-              colorize: true,
-              logFormat: function(level, message) {
-                  return message;
-              }
-            })
-          ]
-        });
-
-        // send the message to pt
-        logger.info('I am being logged!!');
-
-        cb(null, record);
+        logger.info('['+job.id+'] ' + message);
+        logger.info('['+job.id+'] ' + 'Got another message');
+        logger.info('['+job.id+'] ' + 'Got a third message');
+        cb(null, job);
       }
     })
   };

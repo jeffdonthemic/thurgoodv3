@@ -17,8 +17,7 @@
     "loopback-datasource-juggler": "^2.19.0",
     "mongodb-uri": "^0.9.7",
     "serve-favicon": "^2.0.1",
-    "winston": "^1.0.1",
-    "winston-papertrail": "^1.0.1"
+    "strong-logger": "0.0.3"
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"
