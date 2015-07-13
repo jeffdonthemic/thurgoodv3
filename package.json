@@ -4,7 +4,7 @@
   "main": "server/server.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --reporter spec",
-    "start": "nodemon ."
+    "start": "NODE_ENV=test nodemon ."
   },
   "dependencies": {
     "bluebird": "^2.9.33",
@@ -16,7 +16,9 @@
     "loopback-connector-mongodb": "^1.11.3",
     "loopback-datasource-juggler": "^2.19.0",
     "mongodb-uri": "^0.9.7",
-    "serve-favicon": "^2.0.1"
+    "serve-favicon": "^2.0.1",
+    "winston": "^1.0.1",
+    "winston-papertrail": "^1.0.1"
   },
   "optionalDependencies": {
     "loopback-explorer": "^1.1.0"

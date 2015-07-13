@@ -6,7 +6,7 @@ var api = supertest('http://localhost:3000/api');
 
 var User = app.models.User;
 
-describe.only('Authenticated User', function() {
+describe('Authenticated User', function() {
 
   var accessToken;
   var username = 'test-user1';
@@ -39,7 +39,7 @@ describe.only('Authenticated User', function() {
      });
   });
 
-  it('successfully posts a new message', function(done) {
+  it.only('successfully posts a new message', function(done) {
     api.post('/jobs/test-job1/message?access_token='+accessToken)
     .send({
       "message": "Ran successfully",

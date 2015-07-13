@@ -1,3 +1,6 @@
+var winston = require('winston');
+var Papertrail = require('winston-papertrail').Papertrail;
+
 module.exports = function(Job) {
 
   // Register a 'message' remote method: /Jobs/some-id/message
@@ -19,7 +22,27 @@ module.exports = function(Job) {
   Job.message = function(id, message, sender, cb) {
     Job.findById(id, function(err, record){
       if (err) cb(err);
-      if (!err) cb(null, record);
+      if (!err) {
+
+        var logger = new winston.Logger({
+          transports: [
+            new winston.transports.Papertrail({
+              host: 'logs3.papertrailapp.com',
+              port: 53467,
+              program: 'jeffdonthemic',
+              colorize: true,
+              logFormat: function(level, message) {
+                  return message;
+              }
+            })
+          ]
+        });
+
+        // send the message to pt
+        logger.info('I am being logged!!');
+
+        cb(null, record);
+      }
     })
   };
 
