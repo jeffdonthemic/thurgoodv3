@@ -1,10 +1,7 @@
 {
   "thurgood": {
     "host": "localhost",
-    "port": 27017,
     "database": "thurgood-test",
-    "username": "",
-    "password": "",
     "name": "thurgood-test",
     "connector": "mongodb"
   }

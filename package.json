@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server/server.js",
   "scripts": {
-    "test":"NODE_ENV=test mocha --reporter spec",
-    "start": "node ."
+    "test": "NODE_ENV=test mocha --reporter spec",
+    "start": "nodemon ."
   },
   "dependencies": {
     "bluebird": "^2.9.33",
@@ -15,6 +15,7 @@
     "loopback-boot": "^2.6.5",
     "loopback-connector-mongodb": "^1.11.3",
     "loopback-datasource-juggler": "^2.19.0",
+    "mongodb-uri": "^0.9.7",
     "serve-favicon": "^2.0.1"
   },
   "optionalDependencies": {

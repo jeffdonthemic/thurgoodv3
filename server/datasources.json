@@ -4,11 +4,7 @@
     "connector": "memory"
   },
   "thurgood": {
-    "host": "ds037262.mongolab.com",
-    "port": 37262,
-    "database": "heroku_q3tx8w3v",
-    "username": "heroku_q3tx8w3v",
-    "password": "1551r7a5vhcboccu8vk2noe31c",
+    "database": "thurgood",
     "name": "thurgood",
     "connector": "mongodb"
   }
