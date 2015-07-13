@@ -1,0 +1,15 @@
+{
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
+  "thurgood": {
+    "host": "localhost",
+    "port": 27017,
+    "database": "thurgood",
+    "username": "",
+    "password": "",
+    "name": "thurgood",
+    "connector": "mongodb"
+  }
+}
