@@ -4,28 +4,6 @@ var Server = app.models.Server;
 var Job = app.models.Job;
 var User = app.models.User;
 
-var createUsers = function() {
-  return new Promise(function(resolve, reject) {
-    User.create([
-      {
-        id: 'test-user1',
-        username: 'test-user1',
-        email: 'test-user1@appirio.com',
-        password: 'password',
-      },
-      {
-        id: 'test-user2',
-        username: 'test-user2',
-        email: 'test-user2@appirio.com',
-        password: 'password',
-      }
-    ], function(err, records) {
-      if (err) reject(err);
-      if (!err) resolve(records);
-    });
-  });
-};
-
 var createServers = function(users) {
   return new Promise(function(resolve, reject) {
     Server.create([
@@ -45,7 +23,8 @@ var createServers = function(users) {
         repoName: "http://www.github.com/java1",
         status: "available",
         updatedAt: "Mon Jul 13 2015 10:34:59 GMT-0600 (MDT)",
-        username: "jeff"
+        username: "jeff",
+        jobId: 'test-job1'
       },
       {
         id: "test-server2",
@@ -68,12 +47,12 @@ var createServers = function(users) {
       }
     ], function(err, records) {
       if (err) reject(err);
-      if (!err) resolve(records);
+      if (!err) resolve(users);
     });
   });
 };
 
-var createJobs = function(Servers) {
+var createJobs = function() {
   return new Promise(function(resolve, reject) {
     Job.create([
       {
@@ -86,10 +65,10 @@ var createJobs = function(Servers) {
         startTime: "Mon Jul 13 2015 11:10:03 GMT-0600 (MDT)",
         updatedAt: "Mon Jul 13 2015 11:10:03 GMT-0600 (MDT)",
         project: "ACME",
-        status: "completed",
+        status: "in progress",
         notification: "email",
         steps: "all",
-        userId: "test-user1"
+        userId: 1
       },
       {
         id: "test-job2",
@@ -103,7 +82,7 @@ var createJobs = function(Servers) {
         status: "in progress",
         notification: "email",
         steps: "all",
-        userId: "test-user2"
+        userId: 1
       }
     ], function(err, records) {
       if (err) reject(err);
@@ -113,12 +92,9 @@ var createJobs = function(Servers) {
 };
 
 before(function(done) {
-  createUsers()
-    .then(function(users) {
-      createServers(users);
-    })
-    .then(function(Servers) {
-      createJobs(Servers);
+  createJobs()
+    .then(function(jobs) {
+      createServers(jobs);
     })
     .finally(function() {
       done();
@@ -131,6 +107,5 @@ before(function(done) {
 after(function(done) {
    Server.destroyAll();
    Job.destroyAll();
-   User.destroyAll();
    done();
 })

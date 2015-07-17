@@ -39,7 +39,7 @@ describe('Authenticated User', function() {
      });
   });
 
-  it.only('successfully posts a new message', function(done) {
+  it('successfully posts a new message', function(done) {
     api.post('/jobs/test-job1/message?access_token='+accessToken)
     .send({
       "message": "Ran successfully",
@@ -51,9 +51,19 @@ describe('Authenticated User', function() {
   it('successfully marks a job as complete', function(done) {
     api.get('/jobs/test-job1/complete?access_token='+accessToken)
     .expect(200)
-    .end(function (err, res) {
-       done();
-     });
+    .expect(function (res) {
+      assert.equal(res.body.status, 'complete');
+    })
+    .end(done);
+  });
+
+  it.only('successfully submits a job for processing', function(done) {
+    api.put('/jobs/test-job1/submit?access_token='+accessToken)
+    .expect(200)
+    .expect(function (res) {
+      assert.equal(res.body.status, 'in progress');
+    })
+    .end(done);
   });
 
 });

@@ -1,0 +1,198 @@
+<apex:page id="thePage" extensions="DragDropFileUploadController" sidebar="false" showheader="false" standardStylesheets="true" standardController="Account" >
+
+<apex:includeScript value="{!URLFOR($Resource.UIJQuery1822, 'js/jquery-1.7.2.min.js')}"/>
+
+	<apex:variable var="objId" value="{!Account.Id}"/>
+	
+<script>
+		// change to false to block multi file upload
+		var SUPPORT_MULTI_FILE = true;
+</script>
+
+<style>
+#filedrag
+{
+	display: none;
+	font-weight: bold;
+	text-align: center;
+	padding: 1em 0;
+	margin: 1em 0;
+	background-color: #DCFBDC;
+	border: 2px dashed #555;
+	border-radius: 7px;
+	cursor: default;
+	min-height:100px;
+	text-align:center;
+	vertical-align: middle;
+	font-size: 20pt;
+	font-weight: bold;
+}
+#filedrag.hover
+{
+	color: #f00;
+	border-color: #f00;
+	border-style: solid;
+	box-shadow: inset 0 3px 4px #888;
+}
+#fileslist
+{
+	overflow: auto;
+	height: 100px;
+	font-size: 12pt;
+	font-weight: normal;
+}
+</style>
+
+
+
+	<form id="upload" enctype="multipart/form-data">
+	
+		<div id="filedrag">
+			<div id="idle">
+				Upload to Salesforce
+			</div>
+			
+			<div id="loading">
+				<apex:image value="/img/loading.gif"  width="18" /> Uploading...
+			</div>
+			<div id="fileslist"></div>
+		</div>
+	
+	</form>
+
+
+	<script>
+		
+		j$ = jQuery.noConflict();
+		
+		// prepare the form when the DOM is ready 
+		j$(document).ready(function() { 
+		     // call initialization file
+			if (window.File && window.FileList && window.FileReader) {
+				Init();
+			}
+		}); 
+		
+		
+		//
+		// initialize
+		function Init() {
+			var filedrag = j$("#filedrag");
+			j$('#loading').hide();
+			j$('#idle').show();
+		
+			filedrag.bind("dragover", FileDragHover);
+			filedrag.bind("dragleave", FileDragHover);
+			filedrag.bind("drop", FileSelectHandler);
+			filedrag.css("display","block");
+		}
+		
+		//used to show the user informations about the upload
+		var filesToUpload = new Array();
+		
+		// file drag hover
+		function FileDragHover(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			e.target.className = (e.type == "dragover" ? "hover" : "");
+		}
+		
+		// file selection
+		function FileSelectHandler(e) {
+			filesToUpload = new Array();
+			//LOCK THE DRAG/DROP
+			filedrag = j$("#filedrag");
+			filedrag.unbind("dragover",FileDragHover);
+			filedrag.unbind("dragleave",FileDragHover);
+			filedrag.unbind("drop",FileSelectHandler);
+				
+			// cancel event and hover styling
+			FileDragHover(e);
+			if(e.originalEvent.dataTransfer){
+		            if(e.originalEvent.dataTransfer.files.length) {
+		                e.preventDefault();
+		                e.stopPropagation();
+		                for (var i = 0, f; f = e.originalEvent.dataTransfer.files[i]; i++) {
+		                	//check file dimensions/types
+							ParseFile(f);
+							UploadFile(f);
+							j$('#loading').show();
+							j$('#idle').hide();
+							
+							//lock multi file uplod
+							if(SUPPORT_MULTI_FILE == false) break;
+							
+						}
+						checkIfCompleted();	
+		            }   
+		        }
+		}
+		
+		//utility object to track the uploading of all files
+		function uploadingFile(file, status)
+		{
+			this.file = file;
+			this.status = status;
+		}
+		
+		function ParseFile(file) {
+			//console.debug(file);
+			filesToUpload.push(new uploadingFile(file,'Uploading...'));
+		}
+		
+		function checkIfCompleted()
+		{
+			//check if all files have been unploaded
+		    var output = j$('#fileslist');
+		    var allUploaded = true;
+		    output.html('');
+		    for(var i = 0; i < filesToUpload.length; i++)
+			{
+				output.html(output.html()+'<b>'+filesToUpload[i].file.name+'</b> ['+(filesToUpload[i].file.size/1024).toFixed(1)+' KB]'+' : '+filesToUpload[i].status+'<br/>');
+				if(filesToUpload[i].status == 'Uploading...') allUploaded &= false;
+			}
+		    if(allUploaded) Init();
+		}
+		
+		// upload JPEG files
+		function UploadFile(file) {
+		
+			var reader = new FileReader();
+			
+			// Closure to capture the file information.
+		    reader.onload = function(e) {
+		    	//http://stackoverflow.com/questions/7431365/filereader-readasbinarystring-to-upload-files
+		    	Visualforce.remoting.Manager.invokeAction(
+		            '{!$RemoteAction.DragDropFileUploadController.saveFile}',
+		            file.name,e.target.result.split(',')[1],'{!objId}',
+		            function(result, event){
+		            	var fup = null;
+		            	for(var i = 0; i < filesToUpload.length; i++)
+		            	{
+		            		if(file === filesToUpload[i].file)
+		            		{
+		            			fup = filesToUpload[i];
+		            		}
+		            	}
+		            	
+		                if (event.status) {
+		                	if(result!=null)
+		                		fup.status = 'Error occurred. Try later. ['+result+']';
+		                	else
+		                		fup.status = 'Upload completed.';
+		                } else if (event.type === 'exception') {
+		                   fup.status = 'Error occurred. Try later. ['+event.message+']';
+		                } else {
+		                    fup.status = 'Error occurred. Try later. ['+result+' '+event.message+']';
+		                }
+		                checkIfCompleted();
+		            }, 
+		            {escape: true});
+		         
+		    };
+		   
+		     reader.readAsDataURL(file);
+		}
+		
+	</script>
+</apex:page>
