@@ -23,20 +23,19 @@ describe('Authenticated User', function() {
     });
   });
 
-  it('reads all servers currectly', function(done) {
-    api.get('/servers?access_token='+accessToken)
-    .expect(200)
-    .end(function (err, res) {
-       done();
-     });
-  });
-
   it('reads all jobs currectly', function(done) {
     api.get('/jobs?access_token='+accessToken)
-    .expect(200)
-    .end(function (err, res) {
-       done();
-     });
+    .expect(200, done);
+  });
+
+  it('reads all servers correctly', function(done) {
+    api.get('/servers?access_token='+accessToken)
+    .expect(200, done);
+  });
+
+  it('reads all projects currectly', function(done) {
+    api.get('/projects?access_token='+accessToken)
+    .expect(200, done);
   });
 
   it('successfully posts a new message', function(done) {
@@ -57,7 +56,7 @@ describe('Authenticated User', function() {
     .end(done);
   });
 
-  it.only('successfully submits a job for processing', function(done) {
+  it('successfully submits a job for processing', function(done) {
     api.put('/jobs/test-job1/submit?access_token='+accessToken)
     .expect(200)
     .expect(function (res) {
@@ -65,5 +64,13 @@ describe('Authenticated User', function() {
     })
     .end(done);
   });
+
+  // it('run the test route correctly', function(done) {
+  //   api2.get('/test?access_token=1'+accessToken)
+  //   .expect(200)
+  //   .end(function (err, res) {
+  //      done();
+  //    });
+  // });
 
 });

@@ -16,18 +16,17 @@ describe('Unauthenticated User', function() {
 
   it('returns 401 for reading servers', function(done) {
     api.get('/servers')
-    .expect(401)
-    .end(function (err, res) {
-       done();
-     });
+    .expect(401, done);
   });
 
   it('returns 401 for reading jobs', function(done) {
     api.get('/jobs')
-    .expect(401)
-    .end(function (err, res) {
-       done();
-     });
+    .expect(401, done);
+  });
+
+  it('returns 401 for reading projects', function(done) {
+    api.get('/projects')
+    .expect(401, done);
   });
 
 });

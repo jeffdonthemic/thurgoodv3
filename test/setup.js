@@ -4,6 +4,29 @@ var Server = app.models.Server;
 var Job = app.models.Job;
 var User = app.models.User;
 
+
+var createUsers = function() {
+  return new Promise(function(resolve, reject) {
+    User.create([
+      {
+        id: 'test-user1',
+        username: 'test-user1',
+        email: 'test-user1@appirio.com',
+        password: 'password',
+      },
+      {
+        id: 'test-user2',
+        username: 'test-user2',
+        email: 'test-user2@appirio.com',
+        password: 'password',
+      }
+    ], function(err, records) {
+      if (err) reject(err);
+      if (!err) resolve(records);
+    });
+  });
+};
+
 var createServers = function(users) {
   return new Promise(function(resolve, reject) {
     Server.create([
@@ -92,10 +115,19 @@ var createJobs = function() {
 };
 
 before(function(done) {
-  createJobs()
+
+  createUsers()
+    .then(function(users) {
+      createJobs();
+    })
     .then(function(jobs) {
       createServers(jobs);
     })
+    // .then(function() {
+    //   return User.find({}, function(err, users) {
+    //     console.log(users);
+    //   });
+    // })
     .finally(function() {
       done();
     })
@@ -107,5 +139,6 @@ before(function(done) {
 after(function(done) {
    Server.destroyAll();
    Job.destroyAll();
+   User.destroyAll();
    done();
 })

@@ -1,50 +1,33 @@
 {
-  "name": "Job",
-  "plural": "jobs",
+  "name": "Project",
+  "plural": "projects",
   "base": "PersistedModel",
   "idInjection": true,
   "options": {
     "validateUpsert": true
   },
   "properties": {
-    "createdAt": {
-      "type": "date",
-      "required": true
-    },
-    "codeUrl": {
+    "name": {
       "type": "string",
       "required": true
     },
-    "endTime": {
-      "type": "date"
-    },
-    "language": {
+    "repoUrl": {
       "type": "string",
       "required": true
     },
-    "platform": {
+    "description": {
       "type": "string"
     },
-    "startTime": {
+    "notification": {
+      "type": "string",
+      "required": true
+    },
+    "createdAt": {
       "type": "date",
       "required": true
     },
     "updatedAt": {
       "type": "date",
-      "required": true
-    },
-    "project": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "required": true
-    },
-    "notification": {
-      "type": "string"
-    },
-    "steps": {
-      "type": "string",
       "required": true
     }
   },

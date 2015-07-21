@@ -14,22 +14,22 @@
     ]
   },
   "User": {
-    "dataSource": "db"
+    "dataSource": "thurgood"
   },
   "AccessToken": {
-    "dataSource": "db",
+    "dataSource": "thurgood",
     "public": false
   },
   "ACL": {
-    "dataSource": "db",
+    "dataSource": "thurgood",
     "public": false
   },
   "RoleMapping": {
-    "dataSource": "db",
+    "dataSource": "thurgood",
     "public": false
   },
   "Role": {
-    "dataSource": "db",
+    "dataSource": "thurgood",
     "public": false
   },
   "Server": {
@@ -37,6 +37,10 @@
     "public": true
   },
   "Job": {
+    "dataSource": "thurgood",
+    "public": true
+  },
+  "Project": {
     "dataSource": "thurgood",
     "public": true
   }

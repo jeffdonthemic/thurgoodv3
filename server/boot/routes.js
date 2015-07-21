@@ -5,7 +5,7 @@
 var fs = require('fs');
 var request = require('request');
 var AdmZip = require('adm-zip');
-var Git = require('nodegit');
+var nodegit = require('nodegit');
 var path = require("path");
 var Promise = require("bluebird");
 var fse = Promise.promisifyAll(require('fs-extra'));
@@ -30,13 +30,14 @@ module.exports = function(app) {
 
     var repoDir = '../../tmp/repo';
     var repository;
+    var remote;
     var index;
 
     var zip = new AdmZip("tmp/sfdc-test-thurgood-src1.zip");
 
     fse.ensureDirAsync(path.resolve(__dirname, repoDir))
     .then(function() {
-      return Git.Repository.init(path.resolve(__dirname, repoDir), 0);
+      return nodegit.Repository.init(path.resolve(__dirname, repoDir), 0);
     })
     .then(function(repo) {
       repository = repo;
@@ -53,47 +54,47 @@ module.exports = function(app) {
       return index.writeTree();
     })
     .then(function(oid) {
-      var author = Git.Signature.create("Thurgood", "thurgood@appirio.com", 123456789, 60);
-      var committer = Git.Signature.create("Thurgood","thurgood@appirio.com", 987654321, 90);
+      var author = nodegit.Signature.create("Thurgood", "thurgood@appirio.com", 123456789, 60);
+      var committer = nodegit.Signature.create("Thurgood","thurgood@appirio.com", 987654321, 90);
       return repository.createCommit("HEAD", author, committer, "Initial commit courtesy of Thurgood!", oid, []);
     })
-    // Add a new remote
+    .then(function(commit){
+      repository.createBranch(
+        "mybranch",
+        commit,
+        0,
+        repository.defaultSignature(),
+        "Created mybranch on HEAD");
+    })
+    .then(function(){
+      return nodegit.Remote.create(repository, "origin", "git@github.com:jeffdonthemic/push-test.git");
+    })
+    .then(function(remoteResult){
+      remote = remoteResult;
+      remote.setCallbacks({
+          credentials: function(url, userName) {
+              return nodegit.Cred.sshKeyFromAgent(userName);
+          }
+      });
+      return remote.connect(nodegit.Enums.DIRECTION.PUSH);
+    })
     .then(function() {
-      return Git.Remote.create(repository, "origin",
-        "git@github.com:jeffdonthemic/push-test.git")
-        .then(function(remote) {
-          remote.connect(Git.Enums.DIRECTION.PUSH);
-
-          var push;
-
-          // We need to set the auth on the remote, not the push object
-          remote.setCallbacks({
-            credentials: function(url, userName) {
-              return Git.Cred.sshKeyFromAgent(userName);
-            }
-          });
-
-          // Create the push object for this remote
-          return remote.push(
-            ["refs/heads/master:refs/heads/master"], null, repository.defaultSignature(),"Push to master")
-          .then(function(pushResult) {
-            push = pushResult;
-            return push.addRefspec("refs/heads/master:refs/heads/master");
-          }).then(function() {
-            // This is the call that performs the actual push
-            return push.finish();
-          }).then(function() {
-            // Check to see if the remote accepted our push request.
-            return push.unpackOk();
-          });
-        });
-
-
-    }).done(function() {
-      console.log('Done!');
-    });
-
-    res.send('done');
+      console.log('remote Connected?', remote.connected())
+      return remote.push(
+          ["refs/heads/master:refs/heads/master"],
+          null,
+          repository.defaultSignature(),
+          "Push to master")
+    })
+    .then(function() {
+      console.log('remote Pushed!')
+    })
+    .catch(function(reason) {
+      console.log(reason);
+    })
+    .finally(function(){
+      res.send('done');
+    })
 
   });
 
