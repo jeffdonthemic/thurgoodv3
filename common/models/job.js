@@ -65,14 +65,14 @@ module.exports = function(Job) {
         return repository.createCommit("HEAD", author, committer, "Initial commit courtesy of Thurgood!", oid, []);
       })
       .then(function(){
-        return nodegit.Remote.create(repository, "origin", "git@github.com:jeffdonthemic/push-test.git");
+        return nodegit.Remote.create(repository, "origin", process.env.REPO);
       })
       .then(function(remoteResult){
         remote = remoteResult;
         remote.setCallbacks({
-            credentials: function(url, userName) {
-                return nodegit.Cred.sshKeyFromAgent(userName);
-            }
+          credentials: function(url, userName) {
+            return nodegit.Cred.sshKeyFromAgent(userName);
+          }
         });
         return remote.connect(nodegit.Enums.DIRECTION.PUSH);
       })
@@ -84,7 +84,7 @@ module.exports = function(Job) {
             "Push to master")
       })
       .then(function(result) {
-        logger.error('[job-'+job.id+'] code pushed to github.');
+        logger.info('[job-'+job.id+'] code pushed to github.');
         resolve(job);
       })
       .catch(function(err) {
