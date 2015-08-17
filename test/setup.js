@@ -81,7 +81,7 @@ var createJobs = function() {
       {
         id: "test-job1",
         createdAt: "Mon Jul 13 2015 11:10:03 GMT-0600 (MDT)",
-        codeUrl: "http://cs-production.s3.amazonaws.com/challenges/2931/files.zip",
+        codeUrl: "http://cs-thurgood.s3.amazonaws.com/sfdc-test-thurgood-src.zip",
         endTime: "Mon Jul 13 2015 11:10:03 GMT-0600 (MDT)",
         language: "Apex",
         platform: "Heroku",

@@ -58,14 +58,6 @@ module.exports = function(app) {
       var committer = nodegit.Signature.create("Thurgood","thurgood@appirio.com", 987654321, 90);
       return repository.createCommit("HEAD", author, committer, "Initial commit courtesy of Thurgood!", oid, []);
     })
-    .then(function(commit){
-      repository.createBranch(
-        "mybranch",
-        commit,
-        0,
-        repository.defaultSignature(),
-        "Created mybranch on HEAD");
-    })
     .then(function(){
       return nodegit.Remote.create(repository, "origin", "git@github.com:jeffdonthemic/push-test.git");
     })
@@ -81,7 +73,7 @@ module.exports = function(app) {
     .then(function() {
       console.log('remote Connected?', remote.connected())
       return remote.push(
-          ["refs/heads/master:refs/heads/master"],
+          ["+refs/heads/master:refs/heads/master"],
           null,
           repository.defaultSignature(),
           "Push to master")

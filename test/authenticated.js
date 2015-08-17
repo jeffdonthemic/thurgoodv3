@@ -56,7 +56,7 @@ describe('Authenticated User', function() {
     .end(done);
   });
 
-  it('successfully submits a job for processing', function(done) {
+  it.only('successfully submits a job for processing', function(done) {
     api.put('/jobs/test-job1/submit?access_token='+accessToken)
     .expect(200)
     .expect(function (res) {
